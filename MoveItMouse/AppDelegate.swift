@@ -59,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserInterfaceValidations {
             if timerActivity == nil {
                 timerActivity = NSBackgroundActivityScheduler(identifier: "dev.saadat.moveitmouse")
                 timerActivity.repeats = true
-                timerActivity.interval = 5 * 60
+                timerActivity.interval = 2 * 60
             }
             
             timerActivity.schedule() { completion in
@@ -80,12 +80,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserInterfaceValidations {
     }
     
     func moveMouse() {
-        var mouseLoc = NSEvent.mouseLocation
-        mouseLoc.y = NSHeight(NSScreen.screens[0].frame) - mouseLoc.y;
+        var mouseLocation = NSEvent.mouseLocation
+        mouseLocation.y = NSHeight(NSScreen.screens[0].frame) - mouseLocation.y;
         
-        let newLoc = CGPoint(x: mouseLoc.x-(mouseLoc.x-10), y: mouseLoc.y+(mouseLoc.y-10))
+        var randomizer = SystemRandomNumberGenerator()
+        let randX = Int.random(in: 1...1000, using: &randomizer)
+        let randY = Int.random(in: 1...1000, using: &randomizer)
+        let isPositive = Int.random(in: 0...2, using: &randomizer)
         
-        CGDisplayMoveCursorToPoint(0, newLoc)
+        let newLocation: CGPoint
+        if isPositive == 0 {
+            newLocation = CGPoint(
+                x: mouseLocation.x + CGFloat(randX),
+                y: mouseLocation.y + CGFloat(randY)
+            )
+        } else {
+            newLocation = CGPoint(
+                x: mouseLocation.x - CGFloat(randX),
+                y: mouseLocation.y - CGFloat(randY)
+            )
+        }
+        
+        CGDisplayMoveCursorToPoint(0, newLocation)
     }
     
     func disableScreenSleep(reason: String = "MoveItMouse Mover Activity") -> Bool? {
